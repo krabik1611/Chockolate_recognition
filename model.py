@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 class Net(nn.Module):
     def __init__(self):
-        super(PoolNet,self).__init__()
+        super(Net,self).__init__()
         self.conv1 = nn.Conv2d(3,6,3)
         self.conv2 = nn.Conv2d(6,3,3)
         self.pool = nn.MaxPool2d(2,2)
@@ -33,11 +33,11 @@ def tensor2img(tensor):
 
 
 if __name__ == '__main__':
-    net = PoolNet()
+    net = Net()
     pool = nn.MaxPool2d(2,2)
     img = cv.cvtColor(cv.imread("Data/data_image/1.jpg"),cv.COLOR_BGR2RGB)
-    img_tensor = torch.Tensor(img).T.unsqueeze(dim=0)
-    out = net(img_tensor).squeeze(0).T.detach().numpy()
+    # img_tensor = torch.Tensor(img).T.unsqueeze(dim=0)
+    out = tensor2img(net(img2tensor(img)))
     save(net)
     plt.subplot(1,2,1),plt.imshow(img)
     plt.title("Orig"), plt.xticks([]),plt.yticks([])
