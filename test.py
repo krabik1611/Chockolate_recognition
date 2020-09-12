@@ -1,43 +1,35 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
+import cv2 as cv
+import matplotlib.pyplot as plt
 
-
-class Net(nn.Module):
+class PoolNet(nn.Module):
     def __init__(self):
-        super(Net,self).__init__()
-        self.conv1 = nn.Conv2d(1,64,kernel_size=(3,3),padding=1)
-        self.conv2 = nn.Conv2d(64,64,kernel_size=(3,3),padding=1)
-        self.max_pool = nn.MaxPool2d(2, 2)
-        self.global_pool = nn.AvgPool2d(7)
-        self.fc1 = nn.Linear(64, 64)
-        self.fc2 = nn.Linear(64, 10)
+        super(PoolNet,self).__init__()
+        self.conv1 = nn.Conv2d(3,6,3)
+        self.conv2 = nn.Conv2d(6,3,3)
+        self.pool = nn.MaxPool2d(2,2)
 
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = self.max_pool(x)
 
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv2(x))
-        x = self.max_pool(x)
-
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv2(x))
-        x = self.global_pool(x)
-
-        x = x.view(-1, 64)
-
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-
-        x = F.log_softmax(x)
-
+    def forward(self,x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
         return x
 
+net = PoolNet()
+# print(a.size())
+# out = conv(a)
+# print(out.size())
+img = cv.cvtColor(cv.imread("Data/data_image/1.jpg"),cv.COLOR_BGR2RGB)
+# plt.imshow(img)
+# plt.show()
+img_tensor = torch.Tensor(img).T.unsqueeze(dim=0)
+out = net(img_tensor).squeeze(0).T.detach().numpy()
 
 
-model = Net()
-params = model.state_dict()
-for key in params.keys():
-    print(key)
+plt.subplot(1,2,1),plt.imshow(img)
+plt.title("Orig"), plt.xticks([]),plt.yticks([])
+plt.subplot(1,2,2),plt.imshow(out)
+plt.title("Pooling"), plt.xticks([]),plt.yticks([])
+plt.show()
