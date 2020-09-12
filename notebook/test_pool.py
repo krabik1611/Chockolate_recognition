@@ -22,16 +22,18 @@ class Pool(nn.Module):
         num_features = 1
         for s in size:
             num_features *= s
+        print(num_features)
         return num_features
 
-
+#
 model = Pool()
-a = torch.randn(1,1,600,600)
-# model = Pool()
-out = model(a)
-print(out.size())
-# plt.subplot(1,2,1),plt.imshow(a.view(600,600))
-# plt.title("Orig"), plt.xticks([]),plt.yticks([])
+a = torch.randn(600,600,3)
+print(a.size())
+# # model = Pool()
+# out = model(a)
+# print(out.size())
+plt.subplot(1,2,1),plt.imshow(a)
+plt.title("Orig"), plt.xticks([]),plt.yticks([])
 # plt.subplot(1,2,1),plt.imshow(out)
 # plt.title("Pooling"), plt.xticks([]),plt.yticks([])
-# plt.show()
+plt.show()
