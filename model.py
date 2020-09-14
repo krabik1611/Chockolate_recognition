@@ -11,10 +11,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.conv2 = nn.Conv2d(6, 12, 5)
-        self.conv3 = nn.Conv2d(12, 14, 3)
-        self.conv4 = nn.Conv2d(14, 20, 3)
+        self.conv1 = nn.Conv2d(3, 6, 3)
+        self.conv2 = nn.Conv2d(6, 12, 3)
+        self.conv3 = nn.Conv2d(12, 30, 3)
+        self.conv4 = nn.Conv2d(30, 20, 3)
         self.pool = nn.MaxPool2d(2, 2)
         try:
             self.load_state_dict(torch.load("model_torch.th"))
@@ -22,11 +22,11 @@ class Net(nn.Module):
             print("Model not found!\nCreate model.")
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = self.pool(F.relu(self.conv3(x)))
-        x = self.pool(F.relu(self.conv4(x)))
-        # x = x.view(-1, self.num_flat_features(x))
+        x = self.pool(torch.sigmoid(self.conv1(x)))
+        x = self.pool(torch.sigmoid(self.conv2(x)))
+        x = self.pool(torch.sigmoid(self.conv3(x)))
+        x = self.pool(torch.sigmoid(self.conv4(x)))
+        x = x.view(-1, self.num_flat_features(x))
         return x
 
     def num_flat_features(self, x):
@@ -48,6 +48,7 @@ def imgResize(img):
 
 
 def img2tensor(img):
+    img = imgResize(img)
     img_tensor = torch.Tensor(img).T.unsqueeze(dim=0)
     return img_tensor
 
