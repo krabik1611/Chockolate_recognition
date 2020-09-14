@@ -27,6 +27,8 @@ class Net(nn.Module):
         x = self.pool(torch.sigmoid(self.conv3(x)))
         x = self.pool(torch.sigmoid(self.conv4(x)))
         x = x.view(-1, self.num_flat_features(x))
+
+
         return x
 
     def num_flat_features(self, x):
