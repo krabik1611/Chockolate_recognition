@@ -30,3 +30,14 @@ class DataBase:
         self.con.commit()
         cur.close()
         return rows
+
+    def readData(self):
+        with self.con:
+            cur = self.con.cursor()
+            cur.execute("SELECT `data` FROM `image_data`")
+            rows = cur.fetchall()
+        self.con.commit()
+        cur.close()
+        return rows
+
+
