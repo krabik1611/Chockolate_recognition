@@ -1,7 +1,7 @@
 # Chockolate_recognition
 
 ## Instalation  
-###Windows and Linux users:  
+### Windows and Linux users:  
 **PyTorch**   
 `conda install pytorch torchvision cudatoolkit=10.2 -c pytorch`  
 No GPU:  

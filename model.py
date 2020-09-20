@@ -62,13 +62,7 @@ def tensor2img(tensor):
 
 if __name__ == '__main__':
     net = Net()
-<<<<<<< HEAD
-    pool = nn.MaxPool2d(2,2)
     img = cv.cvtColor(cv.imread("Data/data_image/5.jpg"),cv.COLOR_BGR2RGB)
-=======
-    pool = nn.MaxPool2d(2, 2)
-    img = cv.cvtColor(cv.imread("Data/data_image/3.jpg"), cv.COLOR_BGR2RGB)
->>>>>>> 36960dd4eaecc91423c5837bc1628e6c0d075e09
     # img_tensor = torch.Tensor(img).T.unsqueeze(dim=0)
     img = cv.resize(img, dsize=(400, 300), interpolation=cv.INTER_CUBIC)
     out = net(img2tensor(img))
