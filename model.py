@@ -35,7 +35,7 @@ def tensor2img(tensor):
 if __name__ == '__main__':
     net = Net()
     pool = nn.MaxPool2d(2,2)
-    img = cv.cvtColor(cv.imread("Data/data_image/1.jpg"),cv.COLOR_BGR2RGB)
+    img = cv.cvtColor(cv.imread("Data/data_image/5.jpg"),cv.COLOR_BGR2RGB)
     # img_tensor = torch.Tensor(img).T.unsqueeze(dim=0)
     out = tensor2img(net(img2tensor(img)))
     save(net)
