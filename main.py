@@ -1,53 +1,32 @@
-import imagesAPI as api
+import mainAPI as api
 import matplotlib.pyplot as plt
-import os
-import csv
-import numpy.linalg as lin
+from PIL import Image
+import imagehash
+def show(tens):
+    for i in range(1, 8):
+        plt.subplot(1, 7, i), plt.imshow(tens[i - 1])
+        plt.title(i), plt.xticks([]), plt.yticks([])
 
-
-def getState():
-    global count
-    global allCount
-    proc = (count/allCount)*100
-    stat = '[%s%s]' %("##"*(int(proc)//10),'--'*(10-(int(proc)//10)))
-    string = 'Complete %22s %i%% %i/%i' %(stat,proc,count,allCount)
-    print(string)
-
-if __name__ == '__main__':
-    data_dir = "Data/data_image/"
-    action = api.MainActive()
-    count = 1
-    list_files = os.listdir(data_dir)
-    allCount = len(list_files)
-    # with open("data.csv", "w") as f:
-    #     writer = csv.writer(f)
-    #     for file in list_files:
-    #         filename = data_dir + file
-    #         img = action.getImage(filename)
-    #         out = action.runNet(img)
-    #         id = file[:file.find(".")]
-    #         data_list = [id, filename, out]
-    #         writer.writerow(data_list)
-    #         getState()
-    #         count += 1
-    for file in list_files:
-
-        if 1:
-            filename = data_dir + file
-            img = action.getImage(filename)
-            out = action.runNet(img)
-            # dict_data = {
-            #             "id":file[:file.find('.')],
-            #             "filename":filename,
-            #             "data":out
-            # }
-            # action.writeDB(dict_data)
-            # print(out.mean())
-            # print(out)
-            plt.plot(out)
-            count +=1
-        else:
-            break
     plt.show()
-        # getState()
-        # count += 1
+
+
+net = api.Net()
+# api.saveModel(net)
+
+img1 = api.readImage("test_image/1.jpg")
+img2 = api.readImage("test_image/5.jpg")
+img3 = api.readImage("test_image/6.jpg")
+
+out1 = net.detach(net.view(net.run(img1)))
+out2 = net.detach(net.view(net.run(img2)))
+out3 = net.detach(net.view(net.run(img3)))
+
+
+image1 = Image.fromarray(out1)
+image2 = Image.fromarray(out2)
+image3 = Image.fromarray(out3)
+
+hash1 = imagehash.phash(image1)
+hash2 = imagehash.phash(image2)
+hash3 = imagehash.phash(image3)
+print("{} | {} | {}".format(hash1-hash2,hash1-hash3,hash2-hash3))

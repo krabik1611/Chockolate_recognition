@@ -8,7 +8,7 @@ def size(img):
     rows, cols, _ = img.shape
     M = cv.getRotationMatrix2D(((cols - 1) / 2.0, (rows - 1) / 2.0), 90, 1)
     dst = cv.warpAffine(img, M, (cols, rows))
-    return dst
+    return cv.cvtColor(dst, cv.COLOR_BGR2RGB)
 
 
 def affine(img):
@@ -18,7 +18,7 @@ def affine(img):
     pts2 = np.float32([[10, 100], [200, 50], [100, 250]])
     M = cv.getAffineTransform(pts1, pts2)
     dst = cv.warpAffine(img, M, (cols, rows))
-    return dst
+    return cv.cvtColor(dst, cv.COLOR_BGR2RGB)
 
 
 def rotate(img):
@@ -28,7 +28,7 @@ def rotate(img):
     center = (int(cols / 2), int(rows / 2))
     M = cv.getRotationMatrix2D(center, angle, 1)
     dst = cv.warpAffine(img, M, (cols, rows))
-    return dst
+    return cv.cvtColor(dst, cv.COLOR_BGR2RGB)
 
 
 def color(img):
@@ -50,7 +50,7 @@ def savePic(filemane, img):
 def getState():
     global lenFiles
     global count
-    total = lenFiles * 6
+    total = lenFiles * 3
     proc = count / total * 100
     stat = '[%s%s]' % ("##" * (int(proc) // 10), '--' * (10 - (int(proc) // 10)))
     string = 'Complete %22s %i%% Write:%i/%i' % (stat, proc, count, total)
@@ -66,8 +66,8 @@ count = 1
 for file in list_files:
     filename = data_folder + file
     img = cv.cvtColor(cv.imread(filename), cv.COLOR_BGR2RGB)
-    new_filename = [mod_folder + file[:file.find('.')] + "_{}.jpg".format(count) for count in range(1, 7)]
-    new_image = [size(img), affine(img), rotate(img),color(img)[0],color(img)[1],color(img)[2]]
+    new_filename = [mod_folder + file[:file.find('.')] + "_{}.jpg".format(count) for count in range(1, 4)]
+    new_image = [size(img), affine(img), rotate(img)]
     # print(type(new_image),type(new_filename))
     for name, image in zip(new_filename, new_image):
         getState()
