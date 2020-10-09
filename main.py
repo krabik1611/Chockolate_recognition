@@ -1,61 +1,62 @@
-import mainAPI as api
-from PIL import Image
-import imagehash
-import os
-import random
-
-net = api.Net()
-# api.saveModel(net)
-
-
-data_folder = "Data/data_image/"
-
-mod_folder = "Data/mod_image/"
-
-list_files = os.listdir(data_folder)
-mod_files = os.listdir(mod_folder)
-
-count = 0
-for file in list_files:
-    filename = data_folder + file
-    img1 = api.readImage(filename)
-
-    num_image = random.randint(1,len(mod_files))
-    new_filename = mod_folder + mod_files[num_image]
-    img2 = api.readImage(new_filename)
-
-    out1 = net.detach(net.view(net.run(img1)))
-    out2 = net.detach(net.view(net.run(img2)))
-    image1 = Image.fromarray(out1)
-    image2 = Image.fromarray(out2)
-    # hash1 = imagehash.average_hash(image1)
-    # hash2 = imagehash.average_hash(image2)
-    # print(hash1,hash2)
-    if file[:file.find(".")] in new_filename:
-        print(True)
-    print(api.hamming2(out1,out2))
-    # break
-#     if hash1-hash2 == 0:
-#         count += 1
-#
-# print(count)
+import torchvision.datasets as dset
+import torch
+import torchvision.transforms as transforms
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.pyplot as plt
 
 
-#
-# img1 = api.readImage("test_image/1.jpg")
-# img2 = api.readImage("test_image/5.jpg")
-# img3 = api.readImage("test_image/6.jpg")
-#
-# out1 = net.detach(net.view(net.run(img1)))
-# out2 = net.detach(net.view(net.run(img2)))
-# out3 = net.detach(net.view(net.run(img3)))
-#
-#
-# image1 = Image.fromarray(out1)
-# image2 = Image.fromarray(out2)
-# image3 = Image.fromarray(out3)
-#
-# hash1 = imagehash.phash(image1)
-# hash2 = imagehash.phash(image2)
-# hash3 = imagehash.phash(image3)
-# print("{} | {} | {}".format(hash1-hash2,hash1-hash3,hash2-hash3))
+
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(2704, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.sigmoid(self.conv2(x)))
+        # x = x.view(-1, 2704)
+        # x = F.relu(self.fc1(x))
+        # x = F.relu(self.fc2(x))
+        # x = self.fc3(x)
+        return x
+
+transform = transforms.Compose([
+                transforms.Resize((64,64)),
+                transforms.ToTensor(),
+                # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+
+])
+
+device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
+
+trainset = dset.ImageFolder(root="new_model/Image/",transform=transform)
+
+trainloader = torch.utils.data.DataLoader(trainset,shuffle=True,batch_size=1)
+
+net = Net().to(device)
+net.load_state_dict(torch.load("model.th"))
+
+out = []
+with torch.no_grad():
+    for i,data in enumerate(trainloader):
+        image,_ = data
+        outputs = net(image.to(device))
+        out.append(outputs)
+
+        if i == 2:
+            break
+for img in out:
+    vector = img.view(-1).cpu().detach().numpy()
+    plt.plot(vector)
+    print(vector.max())
+# plt.xticks()
+plt.show()
