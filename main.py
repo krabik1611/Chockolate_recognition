@@ -8,7 +8,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from model import Net,getData
 import cv2 as cv
-
+import os
+import pandas as pd
+import pickle
 
 device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
 
@@ -20,34 +22,44 @@ transform = transforms.Compose([
 
 ])
 
-trainloader = getData()
 
 net = Net().to(device)
 net.load_state_dict(torch.load("model.th"))
 #
-# out = []
+#
+
+# files = os.listdir(data_folder)
 # with torch.no_grad():
-#     for i,data in enumerate(trainloader):
-#         image,_ = data
-#         outputs = net(image.to(device))
-#         out.append(outputs)
-#
-#         if i == 2:
-#             break
-#
-# for img in out:
-#     vector = img.view(-1).cpu().detach().numpy()
-#
-#     plt.hist(vector)
-#     print(vector.shape)
-# # plt.xticks()
-# plt.show()
-img = "test_image/1.jpg"
-img = cv.cvtColor(cv.imread(img),cv.COLOR_BGR2RGB)
-# plt.imshow(img)
-# plt.show()
+#     for i,file in enumerate(files,1):
+#         filename = data_folder + file
+#         img1 = cv.cvtColor(cv.imread(filename),cv.COLOR_BGR2RGB)
+#         tens1 = transform(img1).unsqueeze(0)
+#         out1 = net(tens1.to(device))
+#         data.append([filename,out1])
+#         # writer.writerow([filename,out1])
+#         print("{}/{}".format(i,len(files)))
+# with open("data.pickle","wb") as f:
+#     pickle.dump(data,f)
 
-tens = transform(img)
+with open("data.pickle","rb") as f:
+    data = pickle.load(f)
 
-out = net(tens.to(device))
-print(out.shape)
+
+
+img1 = "/home/user/Документы/2.jpg"
+img1 = cv.cvtColor(cv.imread(img1),cv.COLOR_BGR2RGB)
+tens1 = transform(img1).unsqueeze(0)
+out1 = net(tens1.to(device))
+result = []
+for filename,out in data:
+    if np.corrcoef(out1,out)[0][1] >0.94:
+        result.append((filename,np.corrcoef(out1,out)[0][1]))
+print(len(result))
+for filename,coef in result:
+    img = cv.cvtColor(cv.imread(filename),cv.COLOR_BGR2RGB)
+    plt.subplot(1,2,1),plt.imshow(img)
+    plt.title("1"),plt.xticks([]),plt.yticks([])
+    plt.subplot(1,2,2),plt.imshow(img1)
+    plt.title("orig"),plt.xticks([]),plt.yticks([])
+    print(coef)
+    plt.show()

@@ -21,7 +21,7 @@ class Net(nn.Module):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(torch.sigmoid(self.conv2(x)))
         x = x.view(-1, 2704)
-        x = F.relu(self.fc1(x))
+        x = torch.sigmoid(self.fc1(x))
         # x = F.relu(self.fc2(x))
         # x = self.fc3(x)
         return x.view(-1).cpu().detach().numpy()
@@ -29,12 +29,13 @@ class Net(nn.Module):
 
 def getData():
     transform = transforms.Compose([
+                    # transforms.ToPILImage(),
                     transforms.Resize((64,64)),
                     transforms.ToTensor(),
                     # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 
     ])
-    trainset = dset.ImageFolder(root="new_model/Image/",transform=transform)
+    trainset = dset.ImageFolder(root="Data/image/",transform=transform)
 
-    trainloader = torch.utils.data.DataLoader(trainset,shuffle=True,batch_size=1)
+    trainloader = torch.utils.data.DataLoader(trainset,shuffle=False,batch_size=1)
     return trainloader
