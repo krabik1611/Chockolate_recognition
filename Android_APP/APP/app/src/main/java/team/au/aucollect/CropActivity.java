@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -12,9 +13,11 @@ import androidx.core.content.ContextCompat;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
+import java.io.IOException;
 
 public class CropActivity extends AppCompatActivity {
     private UCrop uCrop;
+    private static final String TAG = "myLogs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
